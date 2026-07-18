@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
+<title>Primiero — Guida di famiglia</title>
+
+<!-- PWA -->
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#2F4F3E">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Primiero">
+<link rel="apple-touch-icon" href="icon-192.png">
+
+<style>
+  :root{
+    --pine:#2F4F3E;
+    --pine-dark:#1F2A24;
+    --stone:#6B6459;
+    --stone-light:#E9E4DA;
+    --paper:#F7F5F0;
+    --rust:#C1622D;
+    --rust-dark:#9C4A1F;
+    --ink:#20281F;
+    --ok:#4B7A5B;
+    --warn:#B33B2E;
+    --radius:14px;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--paper);
+    color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    min-height:100vh;
+    padding-bottom:78px;
+    -webkit-font-smoothing:antialiased;
+  }
+  header.top{
+    background:var(--pine);
+    color:#fff;
+    padding:22px 20px 20px;
+    position:sticky; top:0; z-index:5;
+    border-bottom:3px solid var(--rust);
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-start;
+    gap:12px;
+  }
+  header.top .eyebrow{
+    font-size:11px;
+    letter-spacing:.14em;
+    text-transform:uppercase;
+    color:#BFD3C4;
+    font-weight:700;
+    margin-bottom:4px;
+  }
+  header.top h1{
+    margin:0;
+    font-size:26px;
+    font-weight:800;
+    letter-spacing:-0.02em;
+  }
+  header.top .sub{
+    margin-top:4px;
+    font-size:13px;
+    color:#D8E4DA;
+  }
+  .lang-toggle{
+    display:flex;
+    border:1px solid rgba(255,255,255,.35);
+    border-radius:100px;
+    overflow:hidden;
+    flex-shrink:0;
+    margin-top:2px;
+  }
+  .lang-toggle button{
+    background:none; border:none;
+    color:#D8E4DA;
+    font-size:12px; font-weight:800;
+    padding:6px 10px;
+  }
+  .lang-toggle button.active{
+    background:var(--rust);
+    color:#fff;
+  }
+
+  main{padding:16px 16px 12px;}
+  .view{display:none;}
+  .view.active{display:block; animation:fade .18s ease;}
+  @keyframes fade{from{opacity:0; transform:translateY(4px);} to{opacity:1; transform:translateY(0);}}
+
+  .hero-wrap{
+    margin:-4px -2px 4px;
+    border-radius:var(--radius);
+    overflow:hidden;
+    position:relative;
+    box-shadow:0 2px 8px rgba(0,0,0,.12);
+  }
+  .hero-wrap img{
+    width:100%; height:170px; object-fit:cover; display:block;
+  }
+  .hero-wrap .cap{
+    position:absolute; left:0; right:0; bottom:0;
+    background:linear-gradient(to top, rgba(0,0,0,.55), rgba(0,0,0,0));
+    color:#fff;
+    font-size:12.5px;
+    font-weight:700;
+    padding:20px 12px 8px;
+  }
+
+  h2.section-title{
+    font-size:13px;
+    text-transform:uppercase;
+    letter-spacing:.1em;
+    color:var(--stone);
+    font-weight:800;
+    margin:22px 0 10px;
+  }
+  h2.section-title:first-child{margin-top:4px;}
+
+  /* Quick links */
+  .quicklinks{display:flex; gap:10px; margin-top:2px;}
+  .qbtn{
+    flex:1;
+    background:#fff;
+    border:1px solid var(--stone-light);
+    border-radius:var(--radius);
+    padding:14px 10px;
+    text-align:center;
+    text-decoration:none;
+    color:var(--ink);
+    font-weight:700;
+    font-size:13px;
+    box-shadow:0 1px 2px rgba(0,0,0,.04);
+  }
+  .qbtn .ic{font-size:22px; display:block; margin-bottom:4px;}
+  .qbtn.disabled{opacity:.5; pointer-events:none;}
+
+  /* Health banner */
+  .banner{
+    background:#FBEAE6;
+    border:1px solid #EBC3B9;
+    border-left:4px solid var(--warn);
+    border-radius:var(--radius);
+    padding:14px 14px;
+    margin-top:16px;
+  }
+  .banner .title{font-weight:800; color:var(--warn); font-size:14px; margin-bottom:4px;}
+  .banner p{margin:0; font-size:13.5px; line-height:1.45; color:#5c2a22;}
+
+  /* Cards */
+  .card{
+    background:#fff;
+    border:1px solid var(--stone-light);
+    border-radius:var(--radius);
+    padding:14px 14px;
+    margin-bottom:10px;
+    box-shadow:0 1px 2px rgba(0,0,0,.04);
+  }
+  .card .row1{display:flex; justify-content:space-between; align-items:flex-start; gap:8px;}
+  .card h3{margin:0; font-size:15.5px; font-weight:800; letter-spacing:-.01em;}
+  .card .meta{display:flex; gap:6px; flex-wrap:wrap; margin-top:6px;}
+  .tag{
+    font-size:11px;
+    font-weight:700;
+    padding:3px 8px;
+    border-radius:100px;
+    background:var(--stone-light);
+    color:var(--stone);
+  }
+  .tag.time{background:#E3EEE6; color:var(--pine);}
+  .tag.diff-easy{background:#E3EEE6; color:var(--ok);}
+  .tag.diff-mod{background:#FBEFE2; color:var(--rust-dark);}
+  .tag.stroller{background:#E7ECFB; color:#3A4C8C;}
+  .card p.desc{font-size:13.5px; line-height:1.5; margin:8px 0 0; color:#4b453d;}
+  .card a.maps-link{
+    display:inline-flex; align-items:center; gap:4px;
+    margin-top:10px;
+    font-size:12.5px; font-weight:700;
+    color:var(--pine);
+    text-decoration:none;
+    border:1px solid var(--stone-light);
+    border-radius:100px;
+    padding:5px 10px;
+  }
+
+  .check{
+    width:26px; height:26px;
+    border-radius:50%;
+    border:2px solid var(--stone-light);
+    background:#fff;
+    flex-shrink:0;
+    display:flex; align-items:center; justify-content:center;
+    font-size:14px;
+    color:#fff;
+  }
+  .check.done{background:var(--pine); border-color:var(--pine);}
+  .card.done{opacity:.55;}
+  .card.done h3{text-decoration:line-through;}
+
+  .filterbar{display:flex; gap:8px; margin-bottom:12px;}
+  .fbtn{
+    flex:1;
+    border:1px solid var(--stone-light);
+    background:#fff;
+    border-radius:100px;
+    padding:8px 6px;
+    font-size:12.5px;
+    font-weight:700;
+    color:var(--stone);
+  }
+  .fbtn.active{background:var(--pine); color:#fff; border-color:var(--pine);}
+
+  .contact-card a{color:var(--pine); font-weight:700; text-decoration:none;}
+  .contact-card .addr{font-size:12.5px; color:var(--stone); margin-top:2px;}
+
+  /* Bottom nav */
+  nav.bottom{
+    position:fixed; left:0; right:0; bottom:0;
+    background:#fff;
+    border-top:1px solid var(--stone-light);
+    display:flex;
+    padding:6px 6px calc(6px + env(safe-area-inset-bottom));
+    z-index:10;
+  }
+  nav.bottom button{
+    flex:1;
+    background:none; border:none;
+    display:flex; flex-direction:column; align-items:center; gap:2px;
+    padding:6px 0 4px;
+    color:var(--stone);
+    font-size:10.5px;
+    font-weight:700;
+  }
+  nav.bottom button .ic{font-size:20px;}
+  nav.bottom button.active{color:var(--pine);}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div>
+    <div class="eyebrow" data-t="header-eyebrow">Dolomiti · Trentino</div>
+    <h1 data-t="header-title">Primiero in famiglia</h1>
+    <div class="sub" data-t="header-sub">Brunet Resort · Fiera di Primiero</div>
+  </div>
+  <div class="lang-toggle">
+    <button data-lang="it" class="active">IT</button>
+    <button data-lang="en">EN</button>
+  </div>
+</header>
+
+<main>
+
+  <!-- HOME -->
+  <section class="view active" id="view-home">
+    <div class="hero-wrap">
+      <img src="hero.jpg" alt="Brunet Resort, Fiera di Primiero">
+      <div class="cap" data-t="hero-cap">Brunet Resort — vista dalla piscina panoramica</div>
+    </div>
+
+    <h2 class="section-title" data-t="quicklinks">Link rapidi</h2>
+    <div class="quicklinks">
+      <a class="qbtn" href="https://www.brunethotels.it/en/" target="_blank" rel="noopener">
+        <span class="ic">🏨</span><span data-t="btn-hotel">Hotel</span>
+      </a>
+      <a class="qbtn disabled" id="menu-link" href="#" target="_blank" rel="noopener">
+        <span class="ic">🍽️</span><span data-t="btn-menu">Menu del giorno</span>
+      </a>
+      <a class="qbtn" href="https://www.3bmeteo.com/meteo/fiera+di+primiero" target="_blank" rel="noopener">
+        <span class="ic">☀️</span><span data-t="btn-weather">Meteo</span>
+      </a>
+    </div>
+    <p style="font-size:12px; color:var(--stone); margin:8px 2px 0;" data-t="menu-hint">
+      Il link del menu va ancora aggiunto — appena disponibile, aggiornalo qui.
+    </p>
+
+    <h2 class="section-title" data-t="musts-title">Da non perdere</h2>
+    <div id="home-musts"></div>
+  </section>
+
+  <!-- ATTIVITÀ -->
+  <section class="view" id="view-activities">
+    <h2 class="section-title" data-t="activities-title">Attività &amp; passeggiate facili</h2>
+    <div class="filterbar">
+      <button class="fbtn active" data-filter="all">—</button>
+      <button class="fbtn" data-filter="todo">—</button>
+      <button class="fbtn" data-filter="done">—</button>
+    </div>
+    <div id="activities-list"></div>
+  </section>
+
+  <!-- ESCURSIONI -->
+  <section class="view" id="view-hikes">
+    <h2 class="section-title" data-t="hikes-title">Escursioni</h2>
+    <p style="font-size:12px; color:var(--stone); margin:-6px 2px 12px;" data-t="hikes-hint">🩵 = stesso spirito del Lago di Calaita: camminata facile + rifugio con vista per pranzo.</p>
+    <div class="filterbar">
+      <button class="fbtn active" data-filter="all" data-scope="hikes">—</button>
+      <button class="fbtn" data-filter="todo" data-scope="hikes">—</button>
+      <button class="fbtn" data-filter="done" data-scope="hikes">—</button>
+    </div>
+    <div id="hikes-list"></div>
+  </section>
+
+  <!-- MALGHE -->
+  <section class="view" id="view-restaurants">
+    <h2 class="section-title" data-t="restaurants-title">Malghe &amp; rifugi per pranzo</h2>
+    <p style="font-size:12px; color:var(--stone); margin:-6px 2px 12px;" data-t="restaurants-hint">Come il Miralago a Calaita: da prenotare o verificare l'apertura prima di partire.</p>
+    <div id="restaurants-list"></div>
+  </section>
+
+  <!-- PRATICO -->
+  <section class="view" id="view-practical">
+    <h2 class="section-title" data-t="contacts-title">Contatti utili</h2>
+    <div class="card contact-card">
+      <h3 data-t="clinic-name">Distretto di Primiero</h3>
+      <div class="addr" data-t="clinic-addr">Via Roma, 1, Tonadico — ambulatorio pubblico</div>
+      <p style="margin:8px 0 0;"><a href="tel:+390439764444">+39 0439 764444</a></p>
+    </div>
+    <div class="card contact-card">
+      <h3 data-t="pharmacy-name">Farmacia Alla Madonna</h3>
+      <div class="addr" data-t="pharmacy-addr">Via Angelo Guadagnini, 28 — aperta anche la domenica</div>
+      <p style="margin:8px 0 0;"><a href="tel:+390439762185">+39 0439 762185</a></p>
+    </div>
+    <div class="card contact-card">
+      <h3 data-t="emergency-name">Emergenza</h3>
+      <div class="addr" data-t="emergency-addr">Numero unico di emergenza in Italia</div>
+      <p style="margin:8px 0 0;"><a href="tel:112">112</a></p>
+    </div>
+
+    <h2 class="section-title" data-t="reminders-title">Da ricordare</h2>
+    <div class="card"><p class="desc" data-t="reminder-1">📶 Scarica le mappe offline prima di arrivare.</p></div>
+    <div class="card"><p class="desc" data-t="reminder-2">🎒 Zaino giornaliero: acqua, giacca a vento, crema solare, scarpe da trekking, costume.</p></div>
+  </section>
+
+</main>
+
+<nav class="bottom">
+  <button class="active" data-view="home"><span class="ic">🏠</span><span data-t="nav-home">Home</span></button>
+  <button data-view="activities"><span class="ic">🌿</span><span data-t="nav-activities">Attività</span></button>
+  <button data-view="hikes"><span class="ic">🥾</span><span data-t="nav-hikes">Escursioni</span></button>
+  <button data-view="restaurants"><span class="ic">🍽️</span><span data-t="nav-restaurants">Malghe</span></button>
+  <button data-view="practical"><span class="ic">📋</span><span data-t="nav-practical">Pratico</span></button>
+</nav>
+
+<script>
+// TRANSLATIONS — UI chrome
+const STRINGS = {
+  it: {
+    'header-eyebrow':'Dolomiti · Trentino',
+    'header-title':'Primiero in famiglia',
+    'header-sub':'Brunet Resort · Fiera di Primiero',
+    'hero-cap':'Brunet Resort — vista dalla piscina panoramica',
+    'quicklinks':'Link rapidi',
+    'btn-hotel':'Hotel',
+    'btn-menu':'Menu del giorno',
+    'btn-weather':'Meteo',
+    'menu-hint':'Il link del menu va ancora aggiunto — appena disponibile, aggiornalo qui.',
+    'musts-title':'Da non perdere',
+    'activities-title':'Attività & passeggiate facili',
+    'hikes-title':'Escursioni',
+    'hikes-hint':'🩵 = stesso spirito del Lago di Calaita: camminata facile + rifugio con vista per pranzo.',
+    'contacts-title':'Contatti utili',
+    'clinic-name':'Distretto di Primiero',
+    'clinic-addr':'Via Roma, 1, Tonadico — ambulatorio pubblico',
+    'pharmacy-name':'Farmacia Alla Madonna',
+    'pharmacy-addr':'Via Angelo Guadagnini, 28 — aperta anche la domenica',
+    'emergency-name':'Emergenza',
+    'emergency-addr':'Numero unico di emergenza in Italia',
+    'reminders-title':'Da ricordare',
+    'reminder-1':'📶 Scarica le mappe offline (Google Maps o Maps.me) prima di arrivare — segnale incostante in Val Canali e Passo Rolle.',
+    'reminder-2':'🎒 Zaino giornaliero: acqua, giacca a vento (il tempo cambia in fretta in quota), crema solare, scarpe da trekking per i sentieri, costume per i laghi.',
+    'nav-home':'Home','nav-activities':'Attività','nav-hikes':'Escursioni','nav-restaurants':'Malghe','nav-practical':'Pratico',
+    'restaurants-title':'Malghe & rifugi per pranzo',
+    'restaurants-hint':'Come il Miralago a Calaita: tutti confermati aperti per la vostra settimana (20–27 luglio) — comunque meglio prenotare, specie per cena.',
+    'hours-label':'🕒 Apertura',
+    'phone-label':'📞 Chiama',
+    'filter-all':'Tutte','filter-todo':'Da fare','filter-done':'Fatte',
+    'empty':'Niente qui per ora.',
+    'maps-link':'📍 Apri in Google Maps',
+    'restaurant-label':'🍽️ Ristorante',
+    'diff-easy':'Facile','diff-mod':'Moderata',
+    'stroller-yes':'Passeggino ok','stroller-no':'No passeggino',
+  },
+  en: {
+    'header-eyebrow':'Dolomites · Trentino',
+    'header-title':'Primiero for the family',
+    'header-sub':'Brunet Resort · Fiera di Primiero',
+    'hero-cap':'Brunet Resort — view from the panoramic pool',
+    'quicklinks':'Quick links',
+    'btn-hotel':'Hotel',
+    'btn-menu':'Daily menu',
+    'btn-weather':'Weather',
+    'menu-hint':'Menu link still to be added — update it here once you have it.',
+    'musts-title':'Don\'t miss',
+    'activities-title':'Activities & easy walks',
+    'hikes-title':'Hikes',
+    'hikes-hint':'🩵 = same spirit as Lago di Calaita: easy walk + a rifugio with a view for lunch.',
+    'contacts-title':'Useful contacts',
+    'clinic-name':'Primiero District Clinic',
+    'clinic-addr':'Via Roma, 1, Tonadico — public health clinic',
+    'pharmacy-name':'Farmacia Alla Madonna',
+    'pharmacy-addr':'Via Angelo Guadagnini, 28 — open Sundays too',
+    'emergency-name':'Emergency',
+    'emergency-addr':'Single emergency number in Italy',
+    'reminders-title':'Good to remember',
+    'reminder-1':'📶 Download offline maps (Google Maps or Maps.me) before arriving — signal is patchy in Val Canali and Passo Rolle.',
+    'reminder-2':'🎒 Daypack: water, windbreaker (weather turns fast up high), sunscreen, hiking shoes for trails, swimsuit for the lakes.',
+    'nav-home':'Home','nav-activities':'Activities','nav-hikes':'Hikes','nav-restaurants':'Malghe','nav-practical':'Practical',
+    'restaurants-title':'Malghe & rifugi for lunch',
+    'restaurants-hint':'Same idea as Miralago at Calaita: all confirmed open for your week (20–27 July) — still worth booking, especially for dinner.',
+    'hours-label':'🕒 Open',
+    'phone-label':'📞 Call',
+    'filter-all':'All','filter-todo':'To do','filter-done':'Done',
+    'empty':'Nothing here yet.',
+    'maps-link':'📍 Open in Google Maps',
+    'restaurant-label':'🍽️ Restaurant',
+    'diff-easy':'Easy','diff-mod':'Moderate',
+    'stroller-yes':'Stroller ok','stroller-no':'No stroller',
+  }
+};
+
+// DATA — bilingual content
+const MUSTS = [
+  { id:'maso-brunet', diff:'easy', maps:'Maso Brunet Fiera di Primiero',
+    it:{name:'Gita settimanale al Maso Brunet', time:'Gratis, offerta hotel', desc:'Passeggiata semplice con guida fino a un belvedere, pranzo al Maso e animazione per i bimbi. Chiedete subito orari e prenotate.'},
+    en:{name:'Weekly trip to Maso Brunet', time:'Free, hotel-organised', desc:'Easy guided walk to a viewpoint, lunch at the Maso and kids\' entertainment. Ask about timing right away and book.'} },
+  { id:'welsperg-turchese', diff:'easy', maps:'Lago Welsperg Val Canali',
+    it:{name:'Lago Welsperg + Lago Turchese', time:'Stessa giornata', desc:'Passeggiata semplice; al Turchese si può giocare con l\'acqua.'},
+    en:{name:'Lago Welsperg + Lago Turchese', time:'Same day', desc:'Easy walk; at Turchese the kids can play in the water.'} },
+  { id:'colbricon', diff:'mod', stroller:false, maps:'Laghi di Colbricon',
+    it:{name:'Laghetti di Colbricon', time:'~40 min andata', desc:'Pianeggiante ma non per passeggini. Si parte da Malga Rolle o con il Colbricon Express.'},
+    en:{name:'Colbricon Lakes', time:'~40 min each way', desc:'Flat but not stroller-friendly. Start from Malga Rolle or take the Colbricon Express.'} },
+  { id:'segantini', diff:'easy', maps:'Baita Segantini Passo Rolle',
+    it:{name:'Baita Segantini', time:'Taxi da Passo Rolle', desc:'Non a piedi, ci si arriva in taxi pubblico. Vista bellissima sulle Pale di San Martino.'},
+    en:{name:'Baita Segantini', time:'Taxi from Passo Rolle', desc:'Don\'t walk up — take the public taxi. Beautiful view of the Pale di San Martino.'} },
+];
+
+const ACTIVITIES = [
+  { id:'vallombrosa', diff:'easy', stroller:true, maps:'Parco Vallombrosa Fiera di Primiero',
+    it:{name:'Parco Vallombrosa', time:'~5 min', desc:'Grande parco giochi in legno vicino a Fiera di Primiero, ombreggiato, bar e parcheggio.'},
+    en:{name:'Parco Vallombrosa', time:'~5 min', desc:'Large wooden playground near Fiera di Primiero, shaded, with a café and parking.'} },
+  { id:'piscina-bici', diff:'easy', stroller:true, maps:'Mezzano Trentino',
+    it:{name:'Piscina hotel o bici fino a Mezzano', time:'Primo giorno', desc:'In base all\'orario di arrivo: relax in piscina oppure ciclabile lungo fiume fino a Mezzano.'},
+    en:{name:'Hotel pool or bike ride to Mezzano', time:'Arrival day', desc:'Depending on arrival time: relax at the pool, or ride the riverside bike path to Mezzano.'} },
+  { id:'arca-di-noe', diff:'easy', stroller:true, maps:'Fattoria Didattica Arca di Noè Passo Cereda',
+    it:{name:'Fattoria Didattica Arca di Noè', time:'~20 min', desc:'Fattoria didattica a Passo Cereda: mucche, caseificazione e degustazione finale.'},
+    en:{name:'Fattoria Didattica Arca di Noè', time:'~20 min', desc:'Educational farm at Passo Cereda: cows, cheesemaking, and a tasting at the end.'} },
+  { id:'paneveggio', diff:'easy', stroller:true, maps:'Parco Naturale Paneveggio Pale di San Martino',
+    it:{name:'Parco Naturale Paneveggio', time:'~15–20 min', desc:'Passeggiate pianeggianti con animali da fattoria liberi lungo il sentiero e un ruscello per rinfrescarsi.'},
+    en:{name:'Parco Naturale Paneveggio', time:'~15–20 min', desc:'Flat walks with free-roaming farm animals along the path and a stream to cool off in.'} },
+  { id:'laghetto-plank', diff:'easy', stroller:true, maps:'Laghetto Plank San Martino di Castrozza',
+    it:{name:'Laghetto Plank / San Martino', time:'~20 min', desc:'Piccolo lago con anello facile e parco giochi, vicino al centro del paese.'},
+    en:{name:'Laghetto Plank / San Martino', time:'~20 min', desc:'Small lake with an easy loop and playground, near the village centre.'} },
+  { id:'malga-canali', diff:'easy', stroller:true, maps:'Malga Canali Val Canali',
+    it:{name:'Malga Canali', time:'~20–25 min', desc:'Malga/ristorante in Val Canali, passeggiata facile + pranzo tipico. Meglio evitare l\'orario di punta a pranzo.'},
+    en:{name:'Malga Canali', time:'~20–25 min', desc:'Farm/restaurant in Val Canali, easy walk plus a typical lunch. Best to avoid peak lunch hour.'} },
+  { id:'agritur-broch', diff:'easy', stroller:true, maps:'Agritur Broch Primiero',
+    it:{name:'Agritur Broch', time:'~20 min', desc:'Altra fattoria con animali, buona alternativa se Arca di Noè è già stata fatta.'},
+    en:{name:'Agritur Broch', time:'~20 min', desc:'Another farm with animals, good alternative if you\'ve already done Arca di Noè.'} },
+  { id:'dazio-miniere', diff:'easy', maps:'Palazzo del Dazio delle Miniere Fiera di Primiero',
+    it:{name:'Palazzo del Dazio delle Miniere', time:'In paese', desc:'Piccolo museo, ottimo come piano B nei giorni di pioggia.'},
+    en:{name:'Palazzo del Dazio delle Miniere', time:'In town', desc:'Small museum, a great plan B on rainy days.'} },
+  { id:'tognola', diff:'mod', maps:'Cabinovia Tognola San Martino di Castrozza',
+    it:{name:'Alpe Tognola', time:'Cabinovia ~15 min', desc:'A 2100 m, parco giochi Alpe delle Marmotte e vista sulle Pale.'},
+    en:{name:'Alpe Tognola', time:'Gondola ~15 min', desc:'At 2,100 m, the Alpe delle Marmotte playground and a view of the Pale.'} },
+  { id:'rosetta', diff:'mod', maps:'Funivia Rosetta San Martino di Castrozza',
+    it:{name:'Cima Rosetta', time:'Funivia', desc:'A 2700 m, si arriva in funivia senza camminare.'},
+    en:{name:'Cima Rosetta', time:'Cable car', desc:'At 2,700 m, reached by cable car with no walking.'} },
+];
+
+const HIKES = [
+  { id:'colbricon-hike', diff:'mod', stroller:false, maps:'Laghi di Colbricon Passo Rolle', like:true,
+    it:{name:'Laghetti di Colbricon', time:'~40 min a piedi', desc:'Da Malga Rolle o Malga Ces, sentiero verso i due laghi, panorama sulle Pale. Non adatto ai passeggini. Il rifugio è proprio sulla riva, stesso formato del Lago di Calaita.', restaurant:'Rifugio Laghi di Colbricon, sulle rive del lago'},
+    en:{name:'Colbricon Lakes', time:'~40 min walk', desc:'From Malga Rolle or Malga Ces, trail to the two lakes, view of the Pale. Not stroller-friendly. The rifugio sits right on the shore — same format as Lago di Calaita.', restaurant:'Rifugio Laghi di Colbricon, right on the lakeshore'} },
+  { id:'malga-crel', diff:'easy', stroller:true, maps:'Malga Crel San Martino di Castrozza',
+    it:{name:'Malga Crel', time:'Da San Martino', desc:'Parte dal Palasport / Agility Forest, tutta su strada forestale in leggera salita, ombreggiata. Galline docili alla malga, vista sulle Pale.'},
+    en:{name:'Malga Crel', time:'From San Martino', desc:'Starts at the Palasport / Agility Forest, all on a shaded forest road with a gentle uphill. Tame chickens at the malga, view of the Pale.'} },
+  { id:'marcio', diff:'easy', stroller:true, maps:'Sentiero Marciò Parco Paneveggio',
+    it:{name:'Sentiero Marciò', time:'~1 ora, 2 km', desc:'Anello tematico facilissimo nel Parco di Paneveggio, pensato per bambini piccoli.'},
+    en:{name:'Sentiero Marciò', time:'~1 hour, 2 km', desc:'Very easy themed loop in Parco di Paneveggio, designed for young children.'} },
+  { id:'welsperg-loop', diff:'easy', stroller:true, maps:'Villa Welsperg Val Canali',
+    it:{name:'Sentiero tematico da Villa Welsperg', time:'Val Canali', desc:'Percorso semicircolare che parte da Villa Welsperg, adatto anche al passeggino da trekking.'},
+    en:{name:'Themed trail from Villa Welsperg', time:'Val Canali', desc:'Semicircular route starting at Villa Welsperg, fine for a trekking stroller too.'} },
+  { id:'rifugio-treviso', diff:'easy', stroller:false, maps:'Rifugio Treviso Val Canali', like:true,
+    it:{name:'Rifugio Treviso (Val Canali)', time:'~45–60 min da Malga Canali', desc:'Sentiero facile e pianeggiante nel bosco, poi breve salita fino al rifugio a 1630 m. Vista spettacolare sulle Pale, stesso spirito di Calaita: camminata facile + pranzo con vista.', restaurant:'Rifugio Treviso — piatti tipici trentini, terrazza panoramica sulle Pale'},
+    en:{name:'Rifugio Treviso (Val Canali)', time:'~45–60 min from Malga Canali', desc:'Easy flat forest trail, then a short climb to the rifugio at 1,630 m. Spectacular view of the Pale — same spirit as Calaita: easy walk + lunch with a view.', restaurant:'Rifugio Treviso — traditional Trentino dishes, panoramic terrace over the Pale'} },
+  { id:'val-venegia', diff:'easy', stroller:true, maps:'Malga Venegiota Val Venegia', like:true,
+    it:{name:'Val Venegia + Malga Venegia/Venegiota', time:'Passo Valles, più distante', desc:'Valle pianeggiante e molto panoramica, comoda anche col passeggino — tra le più belle passeggiate facili delle Dolomiti. Pranzo alla malga con vista frontale sulle Pale: molto simile a Calaita.', restaurant:'Malga Venegia o Malga Venegiota — tosèla, polenta, dolci fatti in casa'},
+    en:{name:'Val Venegia + Malga Venegia/Venegiota', time:'Passo Valles, further out', desc:'Flat, very scenic valley, stroller-friendly too — among the most beautiful easy walks in the Dolomites. Lunch at the malga with a front-row view of the Pale: very similar to Calaita.', restaurant:'Malga Venegia or Malga Venegiota — tosèla cheese, polenta, home-made desserts'} },
+  { id:'segantini-hike', diff:'easy', maps:'Baita Segantini Passo Rolle',
+    it:{name:'Baita Segantini', time:'Taxi da Passo Rolle', desc:'Punto di partenza del Giro delle Pale per gli escursionisti esperti — per voi basta il taxi su e una breve camminata per la vista.'},
+    en:{name:'Baita Segantini', time:'Taxi from Passo Rolle', desc:'Starting point of the Giro delle Pale for serious hikers — for you, just the taxi up and a short walk for the view.'} },
+  { id:'juribrutto', diff:'mod', stroller:false, maps:'Lago Juribrutto Malga Vallazza',
+    it:{name:'Lago Juribrutto', time:'~2 ore da Malga Vallazza', desc:'Più lungo e remoto, nei Lagorai. Vista eccezionale sulle Pale e sul Focobòn, laghetto alpino appartato. Nessun rifugio al lago — portare il pranzo al sacco.'},
+    en:{name:'Lago Juribrutto', time:'~2 hours from Malga Vallazza', desc:'Longer and more remote, in the Lagorai range. Outstanding view of the Pale and Focobòn, a secluded alpine lake. No rifugio at the lake — bring a packed lunch.'} },
+];
+
+// STATE (persisted on-device)
+const RESTAURANTS = [
+  { id:'miralago-calaita', maps:'Rifugio Miralago Lago di Calaita', phone:'+3904391992699',
+    it:{name:'Miralago Calaita', hours:'✅ Aperto nella settimana 20–27 luglio (aperto gran parte dell\'anno)', notes:'Sulla riva del Lago di Calaita, quello che già conoscete. Ristorante-albergo, dehors con vista lago. Piatti tipici (chicche, tosela, polenta).'},
+    en:{name:'Miralago Calaita', hours:'✅ Open during your 20–27 July stay (open most of the year)', notes:'Right on the shore of Lago di Calaita, the one you already know. Restaurant-hotel with outdoor lake-view seating. Traditional dishes (chicche, tosela, polenta).'} },
+  { id:'rifugio-treviso-r', maps:'Rifugio Treviso Val Canali', phone:'+39043962311',
+    it:{name:'Rifugio Treviso', hours:'✅ Aperto nella settimana 20–27 luglio (stagione: ~20 giugno – metà ottobre)', notes:'A 1631 m in Val Canali, terrazza con vista sulle Pale. Piatti tradizionali trentini. Comunque consigliato chiamare prima di salire, come sempre in quota.'},
+    en:{name:'Rifugio Treviso', hours:'✅ Open during your 20–27 July stay (season: ~20 June – mid-October)', notes:'At 1,631 m in Val Canali, terrace looking at the Pale. Traditional Trentino dishes. Still worth a quick call before the walk up, as with any rifugio.'} },
+  { id:'colbricon-r', maps:'Rifugio Laghi di Colbricon Passo Rolle', phone:'+393404665100',
+    it:{name:'Rifugio Laghi di Colbricon', hours:'✅ Aperto nella settimana 20–27 luglio (stagione: 20 giugno – 20 settembre)', notes:'Proprio sulle rive dei due laghetti. Solo contanti, niente carte. Piatti tipici (canederli, polenta, zuppe).'},
+    en:{name:'Rifugio Laghi di Colbricon', hours:'✅ Open during your 20–27 July stay (season: 20 June – 20 September)', notes:'Right on the shore of the two lakes. Cash only, no cards. Traditional dishes (canederli, polenta, soups).'} },
+  { id:'malga-venegia-r', maps:'Malga Venegia Val Venegia', phone:'+393480627886',
+    it:{name:'Malga Venegia', hours:'✅ Aperto tutti i giorni nella settimana 20–27 luglio (stagione estiva: 6 giu–30 set)', notes:'Nel cuore della Val Venegia, vista frontale sulle Pale. Tosèla e piatti tradizionali. Cena solo su prenotazione.'},
+    en:{name:'Malga Venegia', hours:'✅ Open every day during your 20–27 July stay (summer season: 6 Jun–30 Sep)', notes:'In the heart of Val Venegia, front-on view of the Pale. Tosèla cheese and traditional dishes. Dinner by reservation only.'} },
+  { id:'malga-venegiota-r', maps:'Malga Venegiota Val Venegia', phone:'+393405615263',
+    it:{name:'Malga Venegiota', hours:'✅ Aperto tutti i giorni nella settimana 20–27 luglio (stagione: 6 giugno – 30 settembre)', notes:'Poco oltre Malga Venegia, terrazza panoramica sulle Pale, menu bambini e area giochi. Contattabile anche su WhatsApp.'},
+    en:{name:'Malga Venegiota', hours:'✅ Open every day during your 20–27 July stay (season: 6 June – 30 September)', notes:'A little past Malga Venegia, panoramic terrace on the Pale, kids\' menu and play area. Reachable on WhatsApp too.'} },
+  { id:'malga-canali-r', maps:'Malga Canali Val Canali', phone:'+393208326226',
+    it:{name:'Malga Canali', hours:'✅ Aperto tutti i giorni nella settimana 20–27 luglio (piena stagione estiva)', notes:'Agriturismo di famiglia, carne e formaggi km 0. Prenotazione consigliata, anche via WhatsApp.'},
+    en:{name:'Malga Canali', hours:'✅ Open every day during your 20–27 July stay (full summer season)', notes:'Family-run farm restaurant, local meat and cheese. Booking recommended, WhatsApp works too.'} },
+];
+
+
+let state = JSON.parse(localStorage.getItem(STATE_KEY) || '{}');
+let lang = localStorage.getItem('primiero-guide-lang') || 'it';
+
+function saveState(){ localStorage.setItem(STATE_KEY, JSON.stringify(state)); }
+function isDone(id){ return !!state[id]; }
+function toggle(id){ state[id] = !state[id]; saveState(); renderAll(); }
+function t(key){ return STRINGS[lang][key] || key; }
+
+// RENDER
+function diffTag(d){
+  if(d==='easy') return `<span class="tag diff-easy">${t('diff-easy')}</span>`;
+  if(d==='mod') return `<span class="tag diff-mod">${t('diff-mod')}</span>`;
+  return '';
+}
+function strollerTag(s){
+  if(s===true) return `<span class="tag stroller">${t('stroller-yes')}</span>`;
+  if(s===false) return `<span class="tag stroller">${t('stroller-no')}</span>`;
+  return '';
+}
+
+function cardHTML(item){
+  const done = isDone(item.id);
+  const c = item[lang];
+  return `
+  <div class="card ${done?'done':''}" data-id="${item.id}">
+    <div class="row1">
+      <div>
+        <h3>${c.name}${item.like?' 🩵':''}</h3>
+        <div class="meta">
+          ${c.time?`<span class="tag time">${c.time}</span>`:''}
+          ${diffTag(item.diff)}
+          ${strollerTag(item.stroller)}
+        </div>
+      </div>
+      <div class="check ${done?'done':''}" onclick="toggle('${item.id}')">${done?'✓':''}</div>
+    </div>
+    <p class="desc">${c.desc}</p>
+    ${c.restaurant ? `<p class="desc" style="margin-top:6px;"><strong>${t('restaurant-label')}:</strong> ${c.restaurant}</p>` : ''}
+    ${item.maps ? `<a class="maps-link" href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(item.maps)}" target="_blank" rel="noopener">${t('maps-link')}</a>` : ''}
+  </div>`;
+}
+
+function restaurantCardHTML(item){
+  const c = item[lang];
+  return `
+  <div class="card">
+    <h3>${c.name}</h3>
+    <div class="meta" style="margin-top:6px;">
+      <span class="tag time">${c.hours}</span>
+    </div>
+    <p class="desc">${c.notes}</p>
+    <div style="display:flex; gap:8px; margin-top:10px; flex-wrap:wrap;">
+      <a class="maps-link" href="tel:${item.phone}">${t('phone-label')}</a>
+      <a class="maps-link" href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(item.maps)}" target="_blank" rel="noopener">${t('maps-link')}</a>
+    </div>
+  </div>`;
+}
+
+function renderList(container, items, filter){
+  let filtered = items;
+  if(filter==='todo') filtered = items.filter(i=>!isDone(i.id));
+  if(filter==='done') filtered = items.filter(i=>isDone(i.id));
+  container.innerHTML = filtered.map(cardHTML).join('') || `<p style="color:var(--stone); font-size:13px; text-align:center; margin-top:20px;">${t('empty')}</p>`;
+}
+
+let activeFilters = { activities:'all', hikes:'all' };
+
+function applyStaticTranslations(){
+  document.querySelectorAll('[data-t]').forEach(el=>{ el.textContent = t(el.dataset.t); });
+  document.querySelectorAll('#view-activities .fbtn').forEach(b=>{ b.textContent = t('filter-'+b.dataset.filter); });
+  document.querySelectorAll('#view-hikes .fbtn').forEach(b=>{ b.textContent = t('filter-'+b.dataset.filter); });
+  document.querySelectorAll('.lang-toggle button').forEach(b=>{ b.classList.toggle('active', b.dataset.lang===lang); });
+  document.documentElement.lang = lang;
+}
+
+function renderAll(){
+  applyStaticTranslations();
+  document.getElementById('home-musts').innerHTML = MUSTS.map(cardHTML).join('');
+  renderList(document.getElementById('activities-list'), ACTIVITIES, activeFilters.activities);
+  renderList(document.getElementById('hikes-list'), HIKES, activeFilters.hikes);
+  document.getElementById('restaurants-list').innerHTML = RESTAURANTS.map(restaurantCardHTML).join('');
+}
+renderAll();
+
+// LANGUAGE TOGGLE
+document.querySelectorAll('.lang-toggle button').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    lang = btn.dataset.lang;
+    localStorage.setItem('primiero-guide-lang', lang);
+    renderAll();
+  });
+});
+
+// NAV
+document.querySelectorAll('nav.bottom button').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    document.querySelectorAll('nav.bottom button').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+    document.getElementById('view-'+btn.dataset.view).classList.add('active');
+  });
+});
+
+// FILTERS
+document.querySelectorAll('.fbtn').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    const scope = btn.closest('#view-activities') ? 'activities' : 'hikes';
+    document.querySelectorAll(`#view-${scope} .fbtn`).forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    activeFilters[scope] = btn.dataset.filter;
+    renderAll();
+  });
+});
+
+// SERVICE WORKER
+if('serviceWorker' in navigator){
+  window.addEventListener('load', ()=>{
+    navigator.serviceWorker.register('sw.js').catch(()=>{});
+  });
+}
+</script>
+
+</body>
+</html>
